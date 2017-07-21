@@ -1,0 +1,4 @@
+adb push $OUT/system/lib/libbasicbt_service.so /system/lib
+adb push $OUT/system/bin/basicbt_server /data
+adb push $OUT/system/bin/basicbt_client /data
+adb push $OUT/system/lib/libbasicbt.so /system/lib
