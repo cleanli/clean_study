@@ -53,12 +53,5 @@ namespace android {
 		}  
 	}   
 
-	bool BnBasicBt::checkPermission(const String16& permission) {  
-		bool ret = true;  
-		if (permission.size())  
-			return true;  
-		return ret;  
-
-	}  
 
 }; // namespace android  

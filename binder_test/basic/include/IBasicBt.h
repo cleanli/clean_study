@@ -8,9 +8,6 @@
   
 namespace android {  
   
-class Parcel;  
-  
-  
 class IBasicBt : public IInterface {  
     public:  
         DECLARE_META_INTERFACE(BasicBt);  
@@ -22,8 +19,6 @@ class BnBasicBt: public BnInterface<IBasicBt> {
     public:  
         virtual status_t onTransact(uint32_t code, const Parcel& data, Parcel* reply,  
                 uint32_t flags = 0);  
-     private:  
-       bool checkPermission(const String16& permission);  
 };  
   
 }; // namespace android  
