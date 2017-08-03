@@ -21,7 +21,7 @@ namespace android {
 
 			int32_t testCmd(uint32_t cmdId, uint32_t paramLen) {  
 				Parcel data, reply;  
-				data.writeInterfaceToken(descriptor);  
+				data.writeInterfaceToken(IBasicBt::getInterfaceDescriptor());
 				data.writeInt32(cmdId);  
 				data.writeInt32(paramLen);  
 				remote()->transact(TEST_CMD, data, &reply);  
