@@ -26,6 +26,7 @@ int main()
 {
 	printf("hello world\n");
 
+#if 1//if no this part of code, preview will be transparent
 	/*copy from frameworks/native/services/surfaceflinger/tests/resize/resize.cpp Lollipop*/
 	// set up the thread-pool
 	sp<ProcessState> proc(ProcessState::self());
@@ -45,16 +46,29 @@ int main()
 	//surfaceControl->setAlpha(1.0);
 	SurfaceComposerClient::closeGlobalTransaction();
 
-#if 0
 	ANativeWindow_Buffer outBuffer;
 	surface->lock(&outBuffer, NULL);
 	ssize_t bpr = outBuffer.stride * bytesPerPixel(outBuffer.format);
-	android_memset16((uint16_t*)outBuffer.bits, 0xF800, bpr*outBuffer.height);
+	android_memset16((uint16_t*)outBuffer.bits, 0x0000, bpr*outBuffer.height);
 	surface->unlockAndPost();
-	getchar();
+	//getchar();
 #endif
 
 	{
+		// create a client to surfaceflinger
+		sp<SurfaceComposerClient> client1 = new SurfaceComposerClient();
+
+		sp<SurfaceControl> surfaceControl1 = client1->createSurface(String8("camera"),
+				160, 240, PIXEL_FORMAT_RGB_565, 0);
+
+		sp<Surface> surface1 = surfaceControl1->getSurface();
+
+		SurfaceComposerClient::openGlobalTransaction();
+		surfaceControl1->setLayer(100000);
+		surfaceControl1->setSize(320, 240);
+		//surfaceControl->setAlpha(1.0);
+		SurfaceComposerClient::closeGlobalTransaction();
+
 		int cameraId=0, camera_num;
 		String16 clientName("hellocameraworld");
 		camera_num = Camera::getNumberOfCameras();
@@ -119,8 +133,8 @@ int main()
 		}
 
 		sp<IGraphicBufferProducer> gbp;
-		if (surface != NULL) {
-			gbp = surface->getIGraphicBufferProducer();
+		if (surface1 != NULL) {
+			gbp = surface1->getIGraphicBufferProducer();
 		}
 
 		if (camera->setPreviewTarget(gbp) != NO_ERROR) {
