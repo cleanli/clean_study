@@ -22,11 +22,149 @@ void messg(const char*s, ...)
 }
 */
 sp<Camera> camera;
+class camtestListener: public CameraListener
+{
+public:
+    virtual void notify(int32_t msgType, int32_t ext1, int32_t ext2);
+    virtual void postData(int32_t msgType, const sp<IMemory>& dataPtr,
+                          camera_frame_metadata_t *metadata);
+    virtual void postDataTimestamp(nsecs_t timestamp, int32_t msgType, const sp<IMemory>& dataPtr);
+    virtual void postRecordingFrameHandleTimestamp(nsecs_t timestamp, native_handle_t* handle);
+
+private:
+    void copyAndPost(const sp<IMemory>& dataPtr, int msgType);
+    Mutex       mLock;
+};
+
+void camtestListener::notify(int32_t msgType, int32_t ext1, int32_t ext2)
+{
+    ALOGV("notify");
+    messg("%s %d\n", __func__, __LINE__);
+
+    // VM pointer will be NULL if object is released
+    Mutex::Autolock _l(mLock);
+    if (msgType == CAMERA_MSG_RAW_IMAGE_NOTIFY) {
+        msgType = CAMERA_MSG_RAW_IMAGE;
+    }
+
+    messg("Got notify: msgType %d ext1 %d ext2 %d\n", msgType, ext1, ext2);
+}
+
+void camtestListener::copyAndPost(const sp<IMemory>& dataPtr, int msgType)
+{
+    // allocate Java byte array and copy data
+    if (dataPtr != NULL) {
+        ssize_t offset;
+        size_t size;
+        sp<IMemoryHeap> heap = dataPtr->getMemory(&offset, &size);
+        ALOGV("copyAndPost: off=%zd, size=%zu", offset, size);
+        uint8_t *heapBase = (uint8_t*)heap->base();
+
+        if (heapBase != NULL) {
+
+#if 1
+            if (msgType == CAMERA_MSG_RAW_IMAGE) {
+                //obj = getCallbackBuffer(env, &mRawImageCallbackBuffers, size);
+            } else if (msgType == CAMERA_MSG_COMPRESSED_IMAGE) {
+		    messg("got jpeg\n");
+		    FILE * fp = fopen("/data/cameratest_dir/picture.jpg", "w");
+		    if(fp != nullptr){
+			    fwrite(heapBase, 1, size, fp);
+			    fclose(fp);
+		    }
+		    else{
+			    messg("open file failed\n");
+		    }
+            } else {
+                ALOGV("Allocating callback buffer");
+                //obj = env->NewByteArray(size);
+            }
+#endif
+        } else {
+            ALOGE("image heap is NULL");
+        }
+    }
+#if 0
+    // post image data to Java
+    env->CallStaticVoidMethod(mCameraJClass, fields.post_event,
+            mCameraJObjectWeak, msgType, 0, 0, obj);
+    if (obj) {
+        env->DeleteLocalRef(obj);
+    }
+#endif
+}
+
+void camtestListener::postData(int32_t msgType, const sp<IMemory>& dataPtr,
+                                camera_frame_metadata_t *metadata)
+{
+    // VM pointer will be NULL if object is released
+    Mutex::Autolock _l(mLock);
+    messg("%s %d\n", __func__, __LINE__);
+
+    int32_t dataMsgType = msgType & ~CAMERA_MSG_PREVIEW_METADATA;
+
+    // return data based on callback type
+    switch (dataMsgType) {
+        case CAMERA_MSG_VIDEO_FRAME:
+            // should never happen
+            break;
+
+        // For backward-compatibility purpose, if there is no callback
+        // buffer for raw image, the callback returns null.
+        case CAMERA_MSG_RAW_IMAGE:
+            ALOGV("rawCallback");
+#if 0
+            if (mRawImageCallbackBuffers.isEmpty()) {
+                env->CallStaticVoidMethod(mCameraJClass, fields.post_event,
+                        mCameraJObjectWeak, dataMsgType, 0, 0, NULL);
+            } else {
+                copyAndPost(dataPtr, dataMsgType);
+            }
+#endif
+            break;
+
+        // There is no data.
+        case 0:
+            break;
+
+        default:
+            ALOGV("dataCallback(%d, %p)", dataMsgType, dataPtr.get());
+            copyAndPost(dataPtr, dataMsgType);
+            break;
+    }
+
+    // post frame metadata to Java
+    if (metadata && (msgType & CAMERA_MSG_PREVIEW_METADATA)) {
+        //postMetadata(env, CAMERA_MSG_PREVIEW_METADATA, metadata);
+    }
+}
+
+void camtestListener::postDataTimestamp(nsecs_t, int32_t msgType, const sp<IMemory>& dataPtr)
+{
+    // TODO: plumb up to Java. For now, just drop the timestamp
+    messg("%s %d\n", __func__, __LINE__);
+    postData(msgType, dataPtr, NULL);
+}
+
+void camtestListener::postRecordingFrameHandleTimestamp(nsecs_t, native_handle_t* handle) {
+    // Video buffers are not needed at app layer so just return the video buffers here.
+    // This may be called when stagefright just releases camera but there are still outstanding
+    // video buffers.
+    messg("%s %d\n", __func__, __LINE__);
+    if (camera != nullptr) {
+        camera->releaseRecordingFrameHandle(handle);
+    } else {
+        native_handle_close(handle);
+        native_handle_delete(handle);
+    }
+}
+
+sp<camtestListener> lsn;
 int main()
 {
 	printf("hello world\n");
 
-#if 1//if no this part of code, preview will be transparent
+#if 1//if remove this part of code, preview will be transparent
 	/*copy from frameworks/native/services/surfaceflinger/tests/resize/resize.cpp Lollipop*/
 	// set up the thread-pool
 	sp<ProcessState> proc(ProcessState::self());
@@ -84,6 +222,8 @@ int main()
 		else{
 			messg("camera connect ok\n");
 		}
+		lsn = new camtestListener;
+		camera->setListener(lsn);
 
 		// make sure camera hardware is alive
 		if (camera->getStatus() != NO_ERROR) {
@@ -145,6 +285,9 @@ int main()
 			messg("setPreviewTarget ok\n");
 		}
 
+		camera->startPreview();
+		getchar();
+		camera->takePicture(CAMERA_MSG_SHUTTER|CAMERA_MSG_COMPRESSED_IMAGE);
 		camera->startPreview();
 		getchar();
 		messg("camera destroy\n");
