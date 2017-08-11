@@ -13,6 +13,11 @@
 #include <camera/Camera.h>
 
 using namespace android;
+void messg(const char*s)
+{
+	printf("%s", s);
+	ALOGE("%s", s);
+}
 int main()
 {
 	printf("hello world\n");
@@ -23,6 +28,15 @@ int main()
 		// Default path: hal version is don't care, do normal camera connect.
 		camera = Camera::connect(cameraId, clientName,
 				Camera::USE_CALLING_UID, Camera::USE_CALLING_PID);
+
+		if (camera == NULL) {
+			messg("camera connect failed\n");
+			return -EACCES;
+		}
+		else{
+			messg("camera connect ok\n");
+		}
+
 	}
 
 	/*copy from frameworks/native/services/surfaceflinger/tests/resize/resize.cpp Lollipop*/
