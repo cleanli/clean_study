@@ -1,5 +1,4 @@
 #include <Windows.h>
-#include "resource.h"
 #include <WindowsX.h>
 
 #define IDR_CONTEXT  200
