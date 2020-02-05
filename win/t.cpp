@@ -1,4 +1,12 @@
 #include <Windows.h>
+
+
+#define IDM_OPT1     301
+#define IDM_OPT2     302
+
+HMENU hRoot;
+void CreateMyMenu();//create menu
+
 LRESULT CALLBACK WindowProc(
       HWND hwnd,
       UINT uMsg,
@@ -14,6 +22,7 @@ int CALLBACK WinMain(
       int nCmdShow
   )
 {
+    CreateMyMenu();
     // class name
     const char* cls_Name = "My Class";
     // design windows class
@@ -37,7 +46,7 @@ int CALLBACK WinMain(
         480,                // width of windos
         250,                // height of windows
         NULL,               //no father windows, is NULL
-        NULL,               //no menu, NULL
+        hRoot,               //menu
         hInstance,          //handle of current windows
         NULL);              //no attached data, NULL
     if(hwnd == NULL) // check if successfully created windows
@@ -66,6 +75,22 @@ LRESULT CALLBACK WindowProc(
     switch(uMsg)
     {
 
+	case WM_COMMAND:
+		{
+            // get Id of menu and check which menu user selected
+			switch(LOWORD(wParam))
+			{
+			case IDM_OPT1:
+				MessageBox(hwnd,"plane coming","Notice",MB_OK);
+				break;
+			case IDM_OPT2:
+				MessageBox(hwnd,"mt gun coming","notice",MB_OK);
+				break;
+			default:
+				break;
+			}
+		}
+        break;
 	case WM_PAINT:
 		{
 			PAINTSTRUCT ps;
@@ -95,4 +120,34 @@ LRESULT CALLBACK WindowProc(
         }
     }
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
+}
+
+void CreateMyMenu()
+{
+	hRoot = CreateMenu();
+	if(!hRoot)
+		return;
+	HMENU pop1 = CreatePopupMenu();
+	AppendMenu(hRoot,
+		MF_POPUP,
+		(UINT_PTR)pop1,
+		"Opera");
+	//one way is using AppendMenu
+	AppendMenu(pop1,
+		MF_STRING,
+		IDM_OPT1,
+		"Plane");
+
+	//another way is using InsertMenuItem
+	MENUITEMINFO mif;
+	mif.cbSize = sizeof(MENUITEMINFO);
+	mif.cch = 100;
+	mif.dwItemData  = NULL;
+	mif.dwTypeData = "MT_GUN";
+	mif.fMask = MIIM_ID | MIIM_STRING | MIIM_STATE;
+	mif.fState = MFS_ENABLED;
+	mif.fType = MIIM_STRING;
+	mif.wID = IDM_OPT2;
+
+	InsertMenuItem(pop1,IDM_OPT2,FALSE,&mif);
 }
