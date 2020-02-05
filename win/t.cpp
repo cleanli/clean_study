@@ -1,6 +1,8 @@
 #include <Windows.h>
+#include "resource.h"
+#include <WindowsX.h>
 
-
+#define IDR_CONTEXT  200
 #define IDM_OPT1     301
 #define IDM_OPT2     302
 
@@ -74,7 +76,31 @@ LRESULT CALLBACK WindowProc(
 {
     switch(uMsg)
     {
-
+	case WM_CONTEXTMENU:
+		{
+			//load menu rc
+			//HMENU hroot = LoadMenu((HINSTANCE)GetWindowLongPtr(hwnd, GWLP_HINSTANCE), MAKEINTRESOURCE(IDR_CONTEXT));
+			HMENU hroot = hRoot;
+			if(hroot)
+			{
+				// get first pop menu
+				HMENU hpop = GetSubMenu(hroot,0);
+				// get cordinate of mouse
+				int px = GET_X_LPARAM(lParam);
+				int py = GET_Y_LPARAM(lParam);
+				// display pop menu
+				TrackPopupMenu(hpop,
+					TPM_LEFTALIGN | TPM_TOPALIGN | TPM_RIGHTBUTTON,
+					px,
+					py,
+					0,
+					(HWND)wParam,
+					NULL);
+				// destroy after use
+				//DestroyMenu(hroot);
+			}
+		}
+		break;
 	case WM_COMMAND:
 		{
             // get Id of menu and check which menu user selected
