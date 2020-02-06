@@ -73,8 +73,31 @@ LRESULT CALLBACK WindowProc(
       LPARAM lParam
 )
 {
+	HBITMAP    hBitmap;
+	static HDC    s_hdcMem;
+
     switch(uMsg)
     {
+        case WM_CREATE:
+            SetWindowText(hwnd, "changed");
+            // set dlg size changable
+            SetWindowLong(hwnd, GWL_STYLE, GetWindowLong(hwnd, GWL_STYLE) | WS_SIZEBOX);
+            // load image
+            hBitmap = (HBITMAP)LoadImage(NULL, "background.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+            if (hBitmap == NULL)
+            {
+                MessageBox(hwnd, "LoadImage failed", "Error", MB_ICONERROR);
+            }
+            else
+            {
+                // put image to HDC - s_hdcMem
+                HDC        hdc;
+                hdc = GetDC(hwnd);
+                s_hdcMem = CreateCompatibleDC(hdc);
+                SelectObject(s_hdcMem, hBitmap);
+                ReleaseDC(hwnd, hdc);
+            }
+            break;
 	case WM_CONTEXTMENU:
 		{
 			//load menu rc
@@ -118,8 +141,15 @@ LRESULT CALLBACK WindowProc(
         break;
 	case WM_PAINT:
 		{
-			PAINTSTRUCT ps;
-			BeginPaint(hwnd, &ps);
+            HDC hdc;
+            RECT       rt;
+            PAINTSTRUCT ps;
+            hdc = BeginPaint(hwnd, &ps);
+
+            //image of background
+            GetClientRect(hwnd, &rt);
+            BitBlt(hdc, 0, 0, rt.right, rt.bottom, s_hdcMem, 0, 0, SRCCOPY);
+
             SetTextColor(ps.hdc, RGB(10, 0, 255));
 			DrawText(ps.hdc, "hello friends",strlen("hello friends"), &(ps.rcPaint), DT_CENTER);
             int arr1[2]= {45,0};
