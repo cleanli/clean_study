@@ -6,12 +6,18 @@
 #define IDM_OPT1     301
 #define IDM_OPT2     302
 
+
+#define IDB_ONE		3301
+#define IDB_TWO		3302
+#define IDB_THREE	3303
+
 HMENU hRoot;
 void CreateMyMenu();//create menu
 int timer_count=0;
 HANDLE hTimer = NULL;
 HANDLE hTimerQueue = NULL;
 char strbuf[128];
+HINSTANCE hg_app;
 
 LRESULT CALLBACK WindowProc(
       HWND hwnd,
@@ -53,6 +59,7 @@ int CALLBACK WinMain(
     // register windows class
     RegisterClass(&wc);
 
+    hg_app = hInstance;
     // create windows
     HWND hwnd = CreateWindow(
         cls_Name,           //class name, same with registered
@@ -95,6 +102,16 @@ LRESULT CALLBACK WindowProc(
     switch(uMsg)
     {
         case WM_CREATE:
+            {
+                //create three button
+                CreateWindow("Button", "B1", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
+                        35, 10, 160, 60, hwnd, (HMENU)IDB_ONE, hg_app, NULL);
+                CreateWindow("Button", "B2", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
+                        35, 80, 160, 60, hwnd, (HMENU)IDB_TWO, hg_app, NULL);
+                CreateWindow("Button", "B3", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
+                        35, 150, 160, 60, hwnd, (HMENU)IDB_THREE, hg_app, NULL);
+            }
+
             memset(strbuf, 0, 128);
             SetWindowText(hwnd, "changed");
             // set dlg size changable
@@ -165,6 +182,18 @@ LRESULT CALLBACK WindowProc(
 				break;
 			case IDM_OPT2:
 				MessageBox(hwnd,"mt gun coming","notice",MB_OK);
+				break;
+			case IDB_ONE:
+				MessageBox(hwnd, "you clicked first", "Notice", MB_OK | MB_ICONINFORMATION);
+				//SendMessage((HWND)lParam, WM_SETTEXT, (WPARAM)NULL, (LPARAM)"first clicked");
+				break;
+			case IDB_TWO:
+				//MessageBox(hwnd, "your clicked two", "Notice", MB_OK | MB_ICONINFORMATION);
+				SendMessage((HWND)lParam, WM_SETTEXT, (WPARAM)NULL, (LPARAM)"second clicked");
+				break;
+			case IDB_THREE:
+				//MessageBox(hwnd, "you clicked tree", "notice", MB_OK | MB_ICONINFORMATION);
+				SendMessage((HWND)lParam, WM_SETTEXT, (WPARAM)NULL, (LPARAM)"third clicked");
 				break;
 			default:
 				break;
