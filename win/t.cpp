@@ -1,5 +1,6 @@
 #include <Windows.h>
 #include <WindowsX.h>
+#include <stdio.h>
 
 #define IDR_CONTEXT  200
 #define IDM_OPT1     301
@@ -7,6 +8,10 @@
 
 HMENU hRoot;
 void CreateMyMenu();//create menu
+int timer_count=0;
+HANDLE hTimer = NULL;
+HANDLE hTimerQueue = NULL;
+char strbuf[128];
 
 LRESULT CALLBACK WindowProc(
       HWND hwnd,
@@ -14,6 +19,17 @@ LRESULT CALLBACK WindowProc(
       WPARAM wParam,
       LPARAM lParam
 );
+
+VOID CALLBACK TimerRoutine(PVOID lpParam, BOOLEAN TimerOrWaitFired)
+{
+    HWND hwnd;
+    timer_count++;
+    if (lpParam != NULL)
+    {
+        HWND hwnd=(HWND)lpParam;
+        InvalidateRect(hwnd,NULL,TRUE);
+    }
+}
 
 //entry of program
 int CALLBACK WinMain(
@@ -79,6 +95,7 @@ LRESULT CALLBACK WindowProc(
     switch(uMsg)
     {
         case WM_CREATE:
+            memset(strbuf, 0, 128);
             SetWindowText(hwnd, "changed");
             // set dlg size changable
             SetWindowLong(hwnd, GWL_STYLE, GetWindowLong(hwnd, GWL_STYLE) | WS_SIZEBOX);
@@ -96,6 +113,21 @@ LRESULT CALLBACK WindowProc(
                 s_hdcMem = CreateCompatibleDC(hdc);
                 SelectObject(s_hdcMem, hBitmap);
                 ReleaseDC(hwnd, hdc);
+            }
+            //timer init
+            // Create the timer queue.
+            hTimerQueue = CreateTimerQueue();
+            if (NULL == hTimerQueue)
+            {
+                MessageBox(hwnd, "CreateTimerQueue failed", "Error", MB_ICONERROR);
+                break;
+            }
+            // Set a timer to call the timer routine in 10 seconds.
+            if (!CreateTimerQueueTimer( &hTimer, hTimerQueue,
+                        (WAITORTIMERCALLBACK)TimerRoutine, hwnd , 2000, 1000, 0))
+            {
+                MessageBox(hwnd, "CreateTimerQueueTimer failed", "Error", MB_ICONERROR);
+                break;
             }
             break;
 	case WM_CONTEXTMENU:
@@ -142,7 +174,7 @@ LRESULT CALLBACK WindowProc(
 	case WM_PAINT:
 		{
             HDC hdc;
-            RECT       rt;
+            RECT rt;
             PAINTSTRUCT ps;
             hdc = BeginPaint(hwnd, &ps);
 
@@ -150,6 +182,7 @@ LRESULT CALLBACK WindowProc(
             GetClientRect(hwnd, &rt);
             BitBlt(hdc, 0, 0, rt.right, rt.bottom, s_hdcMem, 0, 0, SRCCOPY);
 
+            sprintf(strbuf, "%d", timer_count);
             SetTextColor(ps.hdc, RGB(10, 0, 255));
 			DrawText(ps.hdc, "hello friends",strlen("hello friends"), &(ps.rcPaint), DT_CENTER);
             int arr1[2]= {45,0};
@@ -157,7 +190,7 @@ LRESULT CALLBACK WindowProc(
 			int arr3[2] = { 32, 0 };
 			POLYTEXT polys[] =  { {2,25,3,"AL",ETO_CLIPPED,ps.rcPaint,&arr1[0]},
 				{2,65,3,"hap",ETO_CLIPPED,ps.rcPaint,&arr2[0]},
-				{20,90,3,"hap",ETO_CLIPPED,ps.rcPaint,&arr3[0]}
+				{2,90,1,strbuf,ETO_CLIPPED,ps.rcPaint,&arr3[0]}
 			};
 			PolyTextOut(ps.hdc, &polys[0],3);
             HBRUSH hb = CreateSolidBrush(RGB(0,255,0));
@@ -169,6 +202,9 @@ LRESULT CALLBACK WindowProc(
 		}
         break;
     case WM_DESTROY:
+        // Delete all timers in the timer queue.
+        if (!DeleteTimerQueue(hTimerQueue))
+            printf("DeleteTimerQueue failed (%d)\n", GetLastError());
         {
             PostQuitMessage(0);
             return 0;
