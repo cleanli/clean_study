@@ -182,15 +182,16 @@ LRESULT CALLBACK WindowProc(
             GetClientRect(hwnd, &rt);
             BitBlt(hdc, 0, 0, rt.right, rt.bottom, s_hdcMem, 0, 0, SRCCOPY);
 
-            sprintf(strbuf, "%d", timer_count);
+            memset(strbuf, 0, 128);
+            sprintf(strbuf, "%02d", timer_count);
             SetTextColor(ps.hdc, RGB(10, 0, 255));
 			DrawText(ps.hdc, "hello friends",strlen("hello friends"), &(ps.rcPaint), DT_CENTER);
             int arr1[2]= {45,0};
 			int arr2[3] = { 35, 40, 0 };
-			int arr3[2] = { 32, 0 };
+			int arr3[3] = { 9, 10, 0 };
 			POLYTEXT polys[] =  { {2,25,3,"AL",ETO_CLIPPED,ps.rcPaint,&arr1[0]},
 				{2,65,3,"hap",ETO_CLIPPED,ps.rcPaint,&arr2[0]},
-				{2,90,1,strbuf,ETO_CLIPPED,ps.rcPaint,&arr3[0]}
+				{2,90,3,strbuf,ETO_CLIPPED,ps.rcPaint,&arr3[0]}
 			};
 			PolyTextOut(ps.hdc, &polys[0],3);
             HBRUSH hb = CreateSolidBrush(RGB(0,255,0));
