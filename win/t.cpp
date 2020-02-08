@@ -10,6 +10,7 @@
 #define IDB_ONE		3301
 #define IDB_TWO		3302
 #define IDB_THREE	3303
+#define ID_DATA     3304
 
 HMENU hRoot;
 void CreateMyMenu();//create menu
@@ -18,6 +19,7 @@ HANDLE hTimer = NULL;
 HANDLE hTimerQueue = NULL;
 char strbuf[128];
 HINSTANCE hg_app;
+HWND editHd;
 
 LRESULT CALLBACK WindowProc(
       HWND hwnd,
@@ -110,6 +112,9 @@ LRESULT CALLBACK WindowProc(
                         35, 80, 160, 60, hwnd, (HMENU)IDB_TWO, hg_app, NULL);
                 CreateWindow("Button", "B3", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
                         35, 150, 160, 60, hwnd, (HMENU)IDB_THREE, hg_app, NULL);
+                //CreateWindow(TEXT("edit"),TEXT("myedit"),WS_CHILD|WS_VISIBLE|WS_VSCROLL|WS_BORDER|ES_LEFT|ES_MULTILINE|ES_AUTOVSCROLL,
+                editHd = CreateWindow(TEXT("edit"),TEXT("myedit"),WS_CHILD|WS_VISIBLE|WS_BORDER|ES_LEFT,
+                        35, 250, 380, 60, hwnd,(HMENU)ID_DATA, hg_app,NULL);
             }
 
             memset(strbuf, 0, 128);
@@ -184,7 +189,10 @@ LRESULT CALLBACK WindowProc(
 				MessageBox(hwnd,"mt gun coming","notice",MB_OK);
 				break;
 			case IDB_ONE:
-				MessageBox(hwnd, "you clicked first", "Notice", MB_OK | MB_ICONINFORMATION);
+				//MessageBox(hwnd, "you clicked first", "Notice", MB_OK | MB_ICONINFORMATION);
+                char szBuf[1000];
+                GetWindowText(editHd, szBuf, 1000);
+                MessageBox(hwnd, szBuf, "Notice", MB_OK | MB_ICONINFORMATION);
 				//SendMessage((HWND)lParam, WM_SETTEXT, (WPARAM)NULL, (LPARAM)"first clicked");
 				break;
 			case IDB_TWO:
