@@ -7,9 +7,9 @@
 #define IDM_OPT2     302
 
 
-#define IDB_ONE		3301
-#define IDB_TWO		3302
-#define IDB_THREE	3303
+#define IDB_ONE     3301
+#define IDB_TWO     3302
+#define IDB_THREE   3303
 #define ID_DATA     3304
 
 HMENU hRoot;
@@ -22,11 +22,11 @@ HINSTANCE hg_app;
 HWND editHd;
 
 LRESULT CALLBACK WindowProc(
-      HWND hwnd,
-      UINT uMsg,
-      WPARAM wParam,
-      LPARAM lParam
-);
+        HWND hwnd,
+        UINT uMsg,
+        WPARAM wParam,
+        LPARAM lParam
+        );
 
 VOID CALLBACK TimerRoutine(PVOID lpParam, BOOLEAN TimerOrWaitFired)
 {
@@ -41,11 +41,11 @@ VOID CALLBACK TimerRoutine(PVOID lpParam, BOOLEAN TimerOrWaitFired)
 
 //entry of program
 int CALLBACK WinMain(
-      HINSTANCE hInstance,
-      HINSTANCE hPrevInstance,
-      LPSTR lpCmdLine,
-      int nCmdShow
-  )
+        HINSTANCE hInstance,
+        HINSTANCE hPrevInstance,
+        LPSTR lpCmdLine,
+        int nCmdShow
+        )
 {
     CreateMyMenu();
     // class name
@@ -64,17 +64,17 @@ int CALLBACK WinMain(
     hg_app = hInstance;
     // create windows
     HWND hwnd = CreateWindow(
-        cls_Name,           //class name, same with registered
-        "My window",  //title of windows
-        WS_OVERLAPPEDWINDOW, //style of windows
-        38,                 //x cordinate in father windows
-        20,                 //y cordinate in father windows
-        480,                // width of windos
-        250,                // height of windows
-        NULL,               //no father windows, is NULL
-        hRoot,               //menu
-        hInstance,          //handle of current windows
-        NULL);              //no attached data, NULL
+            cls_Name,           //class name, same with registered
+            "My window",  //title of windows
+            WS_OVERLAPPEDWINDOW, //style of windows
+            38,                 //x cordinate in father windows
+            20,                 //y cordinate in father windows
+            480,                // width of windos
+            250,                // height of windows
+            NULL,               //no father windows, is NULL
+            hRoot,               //menu
+            hInstance,          //handle of current windows
+            NULL);              //no attached data, NULL
     if(hwnd == NULL) // check if successfully created windows
         return 0;
 
@@ -92,14 +92,14 @@ int CALLBACK WinMain(
     return 0;
 }
 LRESULT CALLBACK WindowProc(
-      HWND hwnd,
-      UINT uMsg,
-      WPARAM wParam,
-      LPARAM lParam
-)
+        HWND hwnd,
+        UINT uMsg,
+        WPARAM wParam,
+        LPARAM lParam
+        )
 {
-	HBITMAP    hBitmap;
-	static HDC    s_hdcMem;
+    HBITMAP hBitmap;
+    static HDC s_hdcMem;
 
     switch(uMsg)
     {
@@ -130,7 +130,7 @@ LRESULT CALLBACK WindowProc(
             else
             {
                 // put image to HDC - s_hdcMem
-                HDC        hdc;
+                HDC hdc;
                 hdc = GetDC(hwnd);
                 s_hdcMem = CreateCompatibleDC(hdc);
                 SelectObject(s_hdcMem, hBitmap);
@@ -152,131 +152,131 @@ LRESULT CALLBACK WindowProc(
                 break;
             }
             break;
-	case WM_CONTEXTMENU:
-		{
-			//load menu rc
-			//HMENU hroot = LoadMenu((HINSTANCE)GetWindowLongPtr(hwnd, GWLP_HINSTANCE), MAKEINTRESOURCE(IDR_CONTEXT));
-			HMENU hroot = hRoot;
-			if(hroot)
-			{
-				// get first pop menu
-				HMENU hpop = GetSubMenu(hroot,0);
-				// get cordinate of mouse
-				int px = GET_X_LPARAM(lParam);
-				int py = GET_Y_LPARAM(lParam);
-				// display pop menu
-				TrackPopupMenu(hpop,
-					TPM_LEFTALIGN | TPM_TOPALIGN | TPM_RIGHTBUTTON,
-					px,
-					py,
-					0,
-					(HWND)wParam,
-					NULL);
-				// destroy after use
-				//DestroyMenu(hroot);
-			}
-		}
-		break;
-	case WM_COMMAND:
-		{
-            // get Id of menu and check which menu user selected
-			switch(LOWORD(wParam))
-			{
-			case IDM_OPT1:
-				MessageBox(hwnd,"plane coming","Notice",MB_OK);
-				break;
-			case IDM_OPT2:
-				MessageBox(hwnd,"mt gun coming","notice",MB_OK);
-				break;
-			case IDB_ONE:
-				//MessageBox(hwnd, "you clicked first", "Notice", MB_OK | MB_ICONINFORMATION);
-                char szBuf[1000];
-                GetWindowText(editHd, szBuf, 1000);
-                MessageBox(hwnd, szBuf, "Notice", MB_OK | MB_ICONINFORMATION);
-				//SendMessage((HWND)lParam, WM_SETTEXT, (WPARAM)NULL, (LPARAM)"first clicked");
-				break;
-			case IDB_TWO:
-				//MessageBox(hwnd, "your clicked two", "Notice", MB_OK | MB_ICONINFORMATION);
-				SendMessage((HWND)lParam, WM_SETTEXT, (WPARAM)NULL, (LPARAM)"second clicked");
-				break;
-			case IDB_THREE:
-				//MessageBox(hwnd, "you clicked tree", "notice", MB_OK | MB_ICONINFORMATION);
-				SendMessage((HWND)lParam, WM_SETTEXT, (WPARAM)NULL, (LPARAM)"third clicked");
-				break;
-			default:
-				break;
-			}
-		}
-        break;
-	case WM_PAINT:
-		{
-            HDC hdc;
-            RECT rt;
-            PAINTSTRUCT ps;
-            hdc = BeginPaint(hwnd, &ps);
+        case WM_CONTEXTMENU:
+            {
+                //load menu rc
+                //HMENU hroot = LoadMenu((HINSTANCE)GetWindowLongPtr(hwnd, GWLP_HINSTANCE), MAKEINTRESOURCE(IDR_CONTEXT));
+                HMENU hroot = hRoot;
+                if(hroot)
+                {
+                    // get first pop menu
+                    HMENU hpop = GetSubMenu(hroot,0);
+                    // get cordinate of mouse
+                    int px = GET_X_LPARAM(lParam);
+                    int py = GET_Y_LPARAM(lParam);
+                    // display pop menu
+                    TrackPopupMenu(hpop,
+                            TPM_LEFTALIGN | TPM_TOPALIGN | TPM_RIGHTBUTTON,
+                            px,
+                            py,
+                            0,
+                            (HWND)wParam,
+                            NULL);
+                    // destroy after use
+                    //DestroyMenu(hroot);
+                }
+            }
+            break;
+        case WM_COMMAND:
+            {
+                // get Id of menu and check which menu user selected
+                switch(LOWORD(wParam))
+                {
+                    case IDM_OPT1:
+                        MessageBox(hwnd,"plane coming","Notice",MB_OK);
+                        break;
+                    case IDM_OPT2:
+                        MessageBox(hwnd,"mt gun coming","notice",MB_OK);
+                        break;
+                    case IDB_ONE:
+                        //MessageBox(hwnd, "you clicked first", "Notice", MB_OK | MB_ICONINFORMATION);
+                        char szBuf[1000];
+                        GetWindowText(editHd, szBuf, 1000);
+                        MessageBox(hwnd, szBuf, "Notice", MB_OK | MB_ICONINFORMATION);
+                        //SendMessage((HWND)lParam, WM_SETTEXT, (WPARAM)NULL, (LPARAM)"first clicked");
+                        break;
+                    case IDB_TWO:
+                        //MessageBox(hwnd, "your clicked two", "Notice", MB_OK | MB_ICONINFORMATION);
+                        SendMessage((HWND)lParam, WM_SETTEXT, (WPARAM)NULL, (LPARAM)"second clicked");
+                        break;
+                    case IDB_THREE:
+                        //MessageBox(hwnd, "you clicked tree", "notice", MB_OK | MB_ICONINFORMATION);
+                        SendMessage((HWND)lParam, WM_SETTEXT, (WPARAM)NULL, (LPARAM)"third clicked");
+                        break;
+                    default:
+                        break;
+                }
+            }
+            break;
+        case WM_PAINT:
+            {
+                HDC hdc;
+                RECT rt;
+                PAINTSTRUCT ps;
+                hdc = BeginPaint(hwnd, &ps);
 
-            //image of background
-            GetClientRect(hwnd, &rt);
-            BitBlt(hdc, 0, 0, rt.right, rt.bottom, s_hdcMem, 0, 0, SRCCOPY);
+                //image of background
+                GetClientRect(hwnd, &rt);
+                BitBlt(hdc, 0, 0, rt.right, rt.bottom, s_hdcMem, 0, 0, SRCCOPY);
 
-            memset(strbuf, 0, 128);
-            sprintf(strbuf, "%02d", timer_count);
-            SetTextColor(ps.hdc, RGB(10, 0, 255));
-			DrawText(ps.hdc, "hello friends",strlen("hello friends"), &(ps.rcPaint), DT_CENTER);
-            int arr1[2]= {45,0};
-			int arr2[3] = { 35, 40, 0 };
-			int arr3[3] = { 9, 10, 0 };
-			POLYTEXT polys[] =  { {2,25,3,"AL",ETO_CLIPPED,ps.rcPaint,&arr1[0]},
-				{2,65,3,"hap",ETO_CLIPPED,ps.rcPaint,&arr2[0]},
-				{2,90,3,strbuf,ETO_CLIPPED,ps.rcPaint,&arr3[0]}
-			};
-			PolyTextOut(ps.hdc, &polys[0],3);
-            HBRUSH hb = CreateSolidBrush(RGB(0,255,0));
-			HBRUSH orgBrs = (HBRUSH)SelectObject(ps.hdc, hb);
-			Ellipse(ps.hdc,135,35,202,170);
-			SelectObject(ps.hdc, orgBrs);
-            DeleteObject(hb);
-			EndPaint(hwnd, &ps);
-		}
-        break;
-    case WM_DESTROY:
-        // Delete all timers in the timer queue.
-        if (!DeleteTimerQueue(hTimerQueue))
-            printf("DeleteTimerQueue failed (%d)\n", GetLastError());
-        {
-            PostQuitMessage(0);
-            return 0;
-        }
+                memset(strbuf, 0, 128);
+                sprintf(strbuf, "%02d", timer_count);
+                SetTextColor(ps.hdc, RGB(10, 0, 255));
+                DrawText(ps.hdc, "hello friends",strlen("hello friends"), &(ps.rcPaint), DT_CENTER);
+                int arr1[2]= {45,0};
+                int arr2[3] = { 35, 40, 0 };
+                int arr3[3] = { 9, 10, 0 };
+                POLYTEXT polys[] =  { {2,25,3,"AL",ETO_CLIPPED,ps.rcPaint,&arr1[0]},
+                    {2,65,3,"hap",ETO_CLIPPED,ps.rcPaint,&arr2[0]},
+                    {2,90,3,strbuf,ETO_CLIPPED,ps.rcPaint,&arr3[0]}
+                };
+                PolyTextOut(ps.hdc, &polys[0],3);
+                HBRUSH hb = CreateSolidBrush(RGB(0,255,0));
+                HBRUSH orgBrs = (HBRUSH)SelectObject(ps.hdc, hb);
+                Ellipse(ps.hdc,135,35,202,170);
+                SelectObject(ps.hdc, orgBrs);
+                DeleteObject(hb);
+                EndPaint(hwnd, &ps);
+            }
+            break;
+        case WM_DESTROY:
+            // Delete all timers in the timer queue.
+            if (!DeleteTimerQueue(hTimerQueue))
+                printf("DeleteTimerQueue failed (%d)\n", GetLastError());
+            {
+                PostQuitMessage(0);
+                return 0;
+            }
     }
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 
 void CreateMyMenu()
 {
-	hRoot = CreateMenu();
-	if(!hRoot)
-		return;
-	HMENU pop1 = CreatePopupMenu();
-	AppendMenu(hRoot,
-		MF_POPUP,
-		(UINT_PTR)pop1,
-		"Opera");
-	//one way is using AppendMenu
-	AppendMenu(pop1,
-		MF_STRING,
-		IDM_OPT1,
-		"Plane");
+    hRoot = CreateMenu();
+    if(!hRoot)
+        return;
+    HMENU pop1 = CreatePopupMenu();
+    AppendMenu(hRoot,
+            MF_POPUP,
+            (UINT_PTR)pop1,
+            "Opera");
+    //one way is using AppendMenu
+    AppendMenu(pop1,
+            MF_STRING,
+            IDM_OPT1,
+            "Plane");
 
-	//another way is using InsertMenuItem
-	MENUITEMINFO mif;
-	mif.cbSize = sizeof(MENUITEMINFO);
-	mif.cch = 100;
-	mif.dwItemData  = NULL;
-	mif.dwTypeData = "MT_GUN";
-	mif.fMask = MIIM_ID | MIIM_STRING | MIIM_STATE;
-	mif.fState = MFS_ENABLED;
-	mif.fType = MIIM_STRING;
-	mif.wID = IDM_OPT2;
+    //another way is using InsertMenuItem
+    MENUITEMINFO mif;
+    mif.cbSize = sizeof(MENUITEMINFO);
+    mif.cch = 100;
+    mif.dwItemData  = NULL;
+    mif.dwTypeData = "MT_GUN";
+    mif.fMask = MIIM_ID | MIIM_STRING | MIIM_STATE;
+    mif.fState = MFS_ENABLED;
+    mif.fType = MIIM_STRING;
+    mif.wID = IDM_OPT2;
 
-	InsertMenuItem(pop1,IDM_OPT2,FALSE,&mif);
+    InsertMenuItem(pop1,IDM_OPT2,FALSE,&mif);
 }
