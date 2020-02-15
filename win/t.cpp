@@ -27,6 +27,7 @@ HANDLE hTimerQueue = NULL;
 char strbuf[128];
 HINSTANCE hg_app;
 HWND editHd;
+HWND rb1Hd;
 
 LRESULT CALLBACK WindowProc(
         HWND hwnd,
@@ -134,7 +135,7 @@ LRESULT CALLBACK WindowProc(
                         NULL);
                 // group 1
                 yLoc += 20;
-                CreateWindow("Button","male",
+                rb1Hd = CreateWindow("Button","male",
                         WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON | WS_GROUP,
                         282, yLoc, 60, 16,
                         hwnd,
@@ -240,6 +241,9 @@ LRESULT CALLBACK WindowProc(
                         //MessageBox(hwnd, "you clicked first", "Notice", MB_OK | MB_ICONINFORMATION);
                         char szBuf[1000];
                         GetWindowText(editHd, szBuf, 1000);
+                        if(Button_GetCheck(rb1Hd)){
+                            sprintf(szBuf, "Male choosed");
+                        }
                         MessageBox(hwnd, szBuf, "Notice", MB_OK | MB_ICONINFORMATION);
                         //SendMessage((HWND)lParam, WM_SETTEXT, (WPARAM)NULL, (LPARAM)"first clicked");
                         break;
