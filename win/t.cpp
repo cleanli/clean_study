@@ -74,11 +74,11 @@ int CALLBACK WinMain(
     HWND hwnd = CreateWindow(
             cls_Name,           //class name, same with registered
             "My window",  //title of windows
-            WS_OVERLAPPEDWINDOW, //style of windows
+            WS_OVERLAPPEDWINDOW & ~WS_MAXIMIZEBOX& ~WS_THICKFRAME,
             38,                 //x cordinate in father windows
             20,                 //y cordinate in father windows
-            480,                // width of windos
-            250,                // height of windows
+            680,                // width of windos
+            650,                // height of windows
             NULL,               //no father windows, is NULL
             hRoot,               //menu
             hInstance,          //handle of current windows
