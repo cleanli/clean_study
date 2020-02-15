@@ -12,6 +12,13 @@
 #define IDB_THREE   3303
 #define ID_DATA     3304
 
+#define IDC_RADBTN1		50001
+#define IDC_RADBTN2		50002
+#define IDC_RADBTN3		50003
+#define IDC_RADBTNBLUE		51001
+#define IDC_RADBTNRED		51002
+#define IDC_RADBTNGREEN		51003
+
 HMENU hRoot;
 void CreateMyMenu();//create menu
 int timer_count=0;
@@ -115,6 +122,47 @@ LRESULT CALLBACK WindowProc(
                 //CreateWindow(TEXT("edit"),TEXT("myedit"),WS_CHILD|WS_VISIBLE|WS_VSCROLL|WS_BORDER|ES_LEFT|ES_MULTILINE|ES_AUTOVSCROLL,
                 editHd = CreateWindow(TEXT("edit"),TEXT("myedit"),WS_CHILD|WS_VISIBLE|WS_BORDER|ES_LEFT,
                         35, 250, 380, 60, hwnd,(HMENU)ID_DATA, hg_app,NULL);
+                // y cordinate, base
+                int yLoc = 0;
+                // text
+                yLoc += 10;
+                CreateWindow("Static","Your sex is:",
+                        SS_SIMPLE | WS_CHILD | WS_VISIBLE,
+                        280,yLoc,160,18,
+                        hwnd, NULL,
+                        hg_app,
+                        NULL);
+                // group 1
+                yLoc += 20;
+                CreateWindow("Button","male",
+                        WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON | WS_GROUP,
+                        282, yLoc, 60, 16,
+                        hwnd,
+                        (HMENU)IDC_RADBTN1,
+                        hg_app,NULL);
+                yLoc += 20;
+                CreateWindow("Button","female",
+                        WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON,
+                        282,yLoc, 60, 16,
+                        hwnd,(HMENU)IDC_RADBTN2,hg_app,NULL);
+                yLoc += 20;
+                CreateWindow("Button","renyao",WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON,
+                        282,yLoc,60,16,hwnd,(HMENU)IDC_RADBTN3,hg_app,NULL);
+                // text
+                yLoc += 38;
+                CreateWindow("Static","What color do you like",
+                        WS_CHILD | WS_VISIBLE | SS_SIMPLE,
+                        280,yLoc,150,18,hwnd,NULL,hg_app,NULL);
+                // group 2
+                yLoc += 22;
+                CreateWindow("Button","blue",WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON | WS_GROUP,
+                        282,yLoc,60,16,hwnd,(HMENU)IDC_RADBTNBLUE,hg_app,NULL);
+                yLoc += 20;
+                CreateWindow("Button","red",WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON,
+                        282,yLoc,60,16,hwnd,(HMENU)IDC_RADBTNRED,hg_app,NULL);
+                yLoc += 20;
+                CreateWindow("Button","green",WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON,
+                        282,yLoc,60,16,hwnd,(HMENU)IDC_RADBTNGREEN,hg_app,NULL);
             }
 
             memset(strbuf, 0, 128);
