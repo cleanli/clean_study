@@ -169,7 +169,7 @@ LRESULT CALLBACK WindowProc(
             memset(strbuf, 0, 128);
             SetWindowText(hwnd, "changed");
             // set dlg size changable
-            SetWindowLong(hwnd, GWL_STYLE, GetWindowLong(hwnd, GWL_STYLE) | WS_SIZEBOX);
+            //SetWindowLong(hwnd, GWL_STYLE, GetWindowLong(hwnd, GWL_STYLE) | WS_SIZEBOX);
             // load image
             hBitmap = (HBITMAP)LoadImage(NULL, "background.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
             if (hBitmap == NULL)
