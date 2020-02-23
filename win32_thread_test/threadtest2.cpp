@@ -2,12 +2,13 @@
 #include <iostream>
 
 using namespace std;
+int testcount = 0;
  
 DWORD WINAPI ThreadFuncFirst(LPVOID param)
 {
  int iCount = 50;
  while(iCount--){
-  cout<<"\nThreadFuncFirst:"<<iCount<<std::flush;
+  cout<<"\nThreadFuncFirst:"<<iCount<<" testcount "<<testcount++<<std::flush;
   Sleep(1000);
  }
  return 0;
@@ -17,7 +18,7 @@ DWORD WINAPI ThreadFuncSecond(LPVOID param)
 {
  int iCount = 50;
  while(iCount--){
-  cout<<"\nThreadFuncSecond:"<<iCount<<std::flush;
+  cout<<"\nThreadFuncSecond:"<<iCount<<" testcount "<<testcount++<<std::flush;
   Sleep(2000);
  }
  return 0;
